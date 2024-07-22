@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components';
 import logo from '../utils/Images/busybuylogo.png'
 import { NavLink } from 'react-router-dom';
 import Button from './Button';
-import {FavoriteBorder, SearchRounded, ShoppingCartOutlined} from '@mui/icons-material';
+import {FavoriteBorder, SearchRounded, ShoppingCartOutlined,MenuRounded} from '@mui/icons-material';
 
 
 const Nav = styled.div`
@@ -94,11 +94,75 @@ const Name = styled.p`
     color: ${({theme}) => theme.primary};
 `;
 
+const MobileIcon = styled.div`
+   color: ${({theme}) => theme.primary};
+   display:none;
+   @media screen and (max-width:768px){
+     display: flex;
+     align-items: center;
+     
+   }
+`;
+
+const MobileIcons = styled.div`
+   color: ${({theme}) => theme.primary};
+   display:none;
+   @media screen and (max-width:768px){
+    display: flex;
+    align-items: center;
+    justify-content:center;
+    gap: 16px;
+   }
+`;
+
+const MobileMenu = styled.ul`
+      display: flex;
+      flex-direction:column;
+      align-items: start;
+      padding:0 6px;
+      gap:16px;
+      list-style: none;
+      width:80%;
+      padding:12px 40px 24px 40px;
+      background: ${({theme}) => theme.card_light + 99};
+      position: absolute;
+      top: 80px;
+      right:0;
+      transition: all 0.6s ease-in-out;
+      tranform: ${({isOpen}) => (isOpen ? 'translateY(0)':'translateY(-100%)')};
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+      opacity: ${({isOpen}) => (isOpen ? '100%':'0')};
+      z-index: ${({isOpen}) => (isOpen ? '1000':'-1000')};
+`;
 const Navbar = () => {
+  const [isOpen,setIsOpen] = useState(false);
+  const handleHamburger = ()=>{
+      setIsOpen(!isOpen);
+  }
   return (
     <Nav>
       <NavbarContainer>
+        <MobileIcon>
+          <MenuRounded style={{color:'inherit'}} onClick={handleHamburger}/>
+        </MobileIcon>
         <NavLogo><Logo src={logo}/><Name>BusyBuy</Name></NavLogo>
+
+       {isOpen && (<MobileMenu isOpen={isOpen}>
+           <Navlink to="/" onClick={handleHamburger} >Home</Navlink>
+           <Navlink to="/Shop" onClick={handleHamburger} >Shop</Navlink>
+           <Navlink to="/New_Arrivals" onClick={handleHamburger} >New&nbsp;Arrivals</Navlink>
+           <Navlink to="/Orders" onClick={handleHamburger} >Orders</Navlink>
+           <Navlink to="/Contact" onClick={handleHamburger} >Contact</Navlink>
+           <div style={{
+             flex:'1',
+             display:'flex',
+             gap: '12px',
+           }}>
+           <Button text="Sign Up" outlined small/>
+           <Button text="Sign In" small/>
+           </div>
+        </MobileMenu>)}
 
         <NavItems>
           <Navlink to="/">Home</Navlink>
@@ -107,6 +171,22 @@ const Navbar = () => {
           <Navlink to="/Orders">Orders</Navlink>
           <Navlink to="/Contact">Contact</Navlink>
         </NavItems>
+
+        <MobileIcons>
+          <Navlink to='/search'>
+          <SearchRounded sx={{color:'inherit',fontSize:'28px'}}/>
+          </Navlink>
+
+          <Navlink to='/favorite'>
+          <FavoriteBorder sx={{color:'inherit',fontSize:'28px'}}/>
+          </Navlink>
+
+          <Navlink to='/cart'>
+          <ShoppingCartOutlined sx={{color:'inherit',fontSize:'28px'}}/>
+          </Navlink>
+
+          <Button text="Sign&nbsp;In" small></Button>
+        </MobileIcons>
 
         <ButtonContainer>
           <Navlink to='/search'>
@@ -121,7 +201,7 @@ const Navbar = () => {
           <ShoppingCartOutlined sx={{color:'inherit',fontSize:'28px'}}/>
           </Navlink>
 
-          <Button text="SignIn" small></Button>
+          <Button text="Sign&nbsp;In" small/>
         </ButtonContainer>
 
       </NavbarContainer>
