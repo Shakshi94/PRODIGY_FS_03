@@ -7,6 +7,8 @@ import Newarrival from './pages/Newarrival.jsx';
 import Favourite from './pages/Favourite.jsx';
 import Contact from './pages/Contact.jsx';
 import Order from './pages/Order.jsx';
+import { useState } from 'react';
+import Authentication from './pages/Authentication.jsx';
 
 
 const Container = styled.div`
@@ -22,16 +24,16 @@ const Container = styled.div`
 `;
 
 function App() {
- 
+  const [openAuth,setOpenAuth] = useState(false);
   return (
-
     <ThemeProvider theme={lightTheme}>
       <BrowserRouter>
       <Container>
-        <Navbar/>
+        <Navbar setOpenAuth={setOpenAuth} openAuth={openAuth}/>
         <Routes>
           <Route path="/" exact element={<Home/>}/>
         </Routes>
+        {openAuth && <Authentication openAuth={openAuth} setOpenAuth={setOpenAuth}/>}
       </Container>
       </BrowserRouter>
     </ThemeProvider>
