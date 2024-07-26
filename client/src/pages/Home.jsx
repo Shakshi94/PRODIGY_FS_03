@@ -1,8 +1,7 @@
-import React from 'react'
+import React from 'react';
 import styled from 'styled-components';
 import headerImage from '../utils/Images/Header.png'
 import {category} from '../utils/data';
-import PropTypes from 'prop-types';
 import ProductCategoryCard from '../components/cards/ProductCategoryCard ';
 import ProductCard from '../components/cards/ProductCard';
 
