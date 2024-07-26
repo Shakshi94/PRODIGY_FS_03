@@ -8,6 +8,7 @@ import Authentication from './pages/Authentication.jsx';
 import Shoplisting from './pages/Shoplisting.jsx';
 import Favourite from './pages/Favourite.jsx';
 import Cart from './pages/Cart.jsx';
+import ProductDetails from './components/ProductDetails.jsx';
 
 const Container = styled.div`
       width:100%;
@@ -30,9 +31,10 @@ function App() {
         <Navbar setOpenAuth={setOpenAuth} openAuth={openAuth}/>
         <Routes>
           <Route path="/" exact element={<Home/>}/>
-          <Route path="/Shop" exact element={<Shoplisting/>}/>
+          <Route path="/shop" exact element={<Shoplisting/>}/>
           <Route path="/favorite" exact element={<Favourite/>}/>
            <Route path="/cart" exact element={<Cart/>}/>
+           <Route path="/shop/:id" exact element={<ProductDetails/>}/>
         </Routes>
         {openAuth && (<Authentication openAuth={openAuth} setOpenAuth={setOpenAuth}/>)}
       </Container>

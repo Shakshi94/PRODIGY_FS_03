@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components';
+import ProductCard from '../components/cards/ProductCard';
 
 const Container = styled.div`
     padding: 20px 30px;
@@ -24,6 +25,14 @@ const Section = styled.div`
 `;
 
 
+const Title = styled.div`
+    font-size:28px;
+    font-weight: 500;
+    display:flex;
+    justify-content: ${({center}) => (center ? 'center':'center')};
+    align-items: center;
+`;
+
 const CardWrapper = styled.div`
     display:flex;
     flex-wrap: wrap;
@@ -33,37 +42,24 @@ const CardWrapper = styled.div`
         gap:14px;
     }
 `;
-
-const Title = styled.div`
-    font-size:28px;
-    font-weight: 500;
-    display:flex;
-    justify-content: ${({center}) => (center ? 'center':'space-between')}
-    align-items: center;
-`;
-
-const Wrapper = styled.div``;
-
-const Left = styled.div`
-    background: red;
-`;
-
-const Right = styled.div`
-   background: blue;
-`;
-
-
 const Favourite = () => {
-  return <Container>
-
-    <Section>
-      <Title></Title>
-      <Wrapper>
-        <Left>L</Left>
-        <Right> R</Right>
-      </Wrapper>
+  return (
+  <Container>
+    <Section >
+      <Title>Your Favourites</Title>
+      <CardWrapper>
+          <ProductCard/>
+          <ProductCard/>
+          <ProductCard/>
+          <ProductCard/>
+          <ProductCard/>
+          <ProductCard/>
+          <ProductCard/>
+          <ProductCard/>
+      </CardWrapper>
     </Section>
   </Container>
+      )
 }
 
 export default Favourite;

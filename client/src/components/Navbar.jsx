@@ -150,7 +150,7 @@ const Navbar = ({ openAuth,setOpenAuth}) => {
 
        {isOpen && (<MobileMenu isOpen={isOpen}>
            <Navlink to="/" onClick={handleHamburger} >Home</Navlink>
-           <Navlink to="/Shop" onClick={handleHamburger} >Shop</Navlink>
+           <Navlink to="/shop" onClick={handleHamburger} >Shop</Navlink>
            <Navlink to="/New_Arrivals" onClick={handleHamburger} >New&nbsp;Arrivals</Navlink>
            <Navlink to="/Orders" onClick={handleHamburger} >Orders</Navlink>
            <Navlink to="/Contact" onClick={handleHamburger} >Contact</Navlink>
@@ -166,7 +166,7 @@ const Navbar = ({ openAuth,setOpenAuth}) => {
 
         <NavItems>
           <Navlink to="/">Home</Navlink>
-          <Navlink to="/Shop">Shop</Navlink>
+          <Navlink to="/shop">Shop</Navlink>
           <Navlink to="/New_Arrivals">New&nbsp;Arrivals</Navlink>
           <Navlink to="/Orders">Orders</Navlink>
           <Navlink to="/Contact">Contact</Navlink>

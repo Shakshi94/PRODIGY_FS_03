@@ -100,7 +100,7 @@ const Desc = styled.div`
 const Span = styled.div`
     font-size: 14px;
     font-weight: 500;
-    color: ${({theme}) => theme.text_secondary + 60}
+    color: ${({theme}) => theme.text_secondary + 60};
     text-decoration: line-through;
     text-decoration-color: ${({theme}) => theme.text_secondary + 50};
 `;

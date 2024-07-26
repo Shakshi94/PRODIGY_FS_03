@@ -28,7 +28,7 @@ const Section = styled.div`
 `;
 const Img = styled.img`
     border-radius: 10px;
-    width:100%;
+    width: 90%;
     height: 500px;
     object-fit: cover;
     max-width:1200px;
@@ -39,7 +39,7 @@ const Title = styled.div`
     font-size:28px;
     font-weight: 500;
     display:flex;
-    justify-content: ${({center}) => (center ? 'center':'space-between')}
+    justify-content: ${({center}) => (center ? 'center':'center')};
     align-items: center;
 `;
 
