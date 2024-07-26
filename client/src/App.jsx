@@ -3,13 +3,11 @@ import {lightTheme }from './utils/Themes.js';
 import {BrowserRouter,Route,Routes} from 'react-router-dom';
 import Navbar from './components/Navbar.jsx'
 import Home from './pages/Home.jsx';
-import Newarrival from './pages/Newarrival.jsx';
-import Favourite from './pages/Favourite.jsx';
-import Contact from './pages/Contact.jsx';
-import Order from './pages/Order.jsx';
 import { useState } from 'react';
 import Authentication from './pages/Authentication.jsx';
-
+import Shoplisting from './pages/Shoplisting.jsx';
+import Favourite from './pages/Favourite.jsx';
+import Cart from './pages/Cart.jsx';
 
 const Container = styled.div`
       width:100%;
@@ -32,8 +30,11 @@ function App() {
         <Navbar setOpenAuth={setOpenAuth} openAuth={openAuth}/>
         <Routes>
           <Route path="/" exact element={<Home/>}/>
+          <Route path="/Shop" exact element={<Shoplisting/>}/>
+          <Route path="/favorite" exact element={<Favourite/>}/>
+           <Route path="/cart" exact element={<Cart/>}/>
         </Routes>
-        {openAuth && <Authentication openAuth={openAuth} setOpenAuth={setOpenAuth}/>}
+        {openAuth && (<Authentication openAuth={openAuth} setOpenAuth={setOpenAuth}/>)}
       </Container>
       </BrowserRouter>
     </ThemeProvider>
