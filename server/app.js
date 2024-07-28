@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import userRouter from './routes/User.js';
-
+import productRouter from './routes/Products.js';
 dotenv.config();
 
 const app = express();
@@ -29,7 +29,7 @@ app.get('/', async (req, res) => {
 });
 
 app.use('/api/user', userRouter);
-
+app.use('/api/products', productRouter);
 const connectDB = async () => {
   mongoose.set('strictQuery', true);
 
