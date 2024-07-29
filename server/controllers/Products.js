@@ -104,3 +104,13 @@ export const getProductById = async(req,res,next) =>{
         next(err);
     }
 }
+
+
+export const removeAllProducts = async (req, res, next) => {
+    try {
+        await Product.deleteMany({});
+        return res.status(200).json({ message: "All products removed successfully" });
+    } catch (err) {
+        next(err);
+    }
+};

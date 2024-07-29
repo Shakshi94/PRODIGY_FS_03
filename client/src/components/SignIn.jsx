@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import TextInput from './TextInput';
 import Button from './Button';
+import { userSignIn } from '../api';
+import { useDispatch } from 'react-redux';
+import { openSnackbar } from '../redux/reducers/snackbarSlice';
+import { loginSuccess } from '../redux/reducers/userSlice';
 
 
 const Container = styled.div`
@@ -72,7 +76,60 @@ const Spann = styled.span`
 `;
 
 const SignIn = () => {
-  return <Container>
+  const dispatch = useDispatch();
+  const [buttonLoading,setButtonLoading] = useState(false);
+  const [buttonDisable,setButtonDisable] = useState(false);
+  const [email,setEmail] = useState("");
+  const [password,setPassword] = useState("");
+  const validateInputs = () =>{
+    if(!email || !password){
+      alert("Please fill in all fields");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSignIn = async()=>{
+    setButtonLoading(true);
+    setButtonDisable(true);
+    if(validateInputs()){
+       await userSignIn({email,password})
+        .then((res)=> {
+          dispatch(loginSuccess(res.data));
+          dispatch(openSnackbar({
+            message: "Login Successful",
+            severity: "success",
+          })
+        );  
+      }).catch((err) => {
+        if(err.response){
+          setButtonLoading(false);
+          setButtonDisable(false);
+          alert(err.response.data.message);
+          dispatch(
+            openSnackbar({
+              message: err.response.data.message,
+              severity: 'error',
+            })
+          );
+        }else{
+          setButtonLoading(false);
+          setButtonDisable(false);
+          dispatch(
+            openSnackbar({
+              message: err.message,
+              severity: 'error',
+            })
+          )
+        }
+      })
+    }
+
+    setButtonLoading(false);
+    setButtonDisable(false);
+  };
+
+  return (<Container>
     <div>
       <Title>Welcome to BusyBuy<Spann>👋</Spann></Title>
       <Span>Please login with your details here</Span>
@@ -81,17 +138,24 @@ const SignIn = () => {
     <div style={{display:'flex',gap:'20px',flexDirection:'column'}}>
       <TextInput 
         label='Email Address' 
+        email
         placeholder='Enter your email address'
+        value={email}
+        handelChange={(e) => setEmail(e.target.value)}
       />
 
       <TextInput 
         label='Password' 
         placeholder='Enter your Password'
+        password
+        value={password}
+        handelChange={(e) => setPassword(e.target.value)}
       />
       <TextButton>Forget Password?</TextButton>
-      <Button text='Sign In'></Button>
+      <Button text='Sign In' onClick={handleSignIn} isLoading={buttonLoading} isDisabled={buttonDisable}></Button>
     </div>
   </Container>
+  );
 }
 
 export default SignIn

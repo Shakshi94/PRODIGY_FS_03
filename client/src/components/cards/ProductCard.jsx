@@ -1,8 +1,13 @@
-import React from 'react'
+import  { useEffect, useState} from 'react'
 import styled from 'styled-components';
-import bestSeller from "../../utils/Images/bestseller.jpg";
 import {CircularProgress,Rating,} from '@mui/material'
-import {FavoriteRounded,AddShoppingCartOutlined } from '@mui/icons-material'
+import {FavoriteRounded,AddShoppingCartOutlined, FavoriteBorder } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { openSnackbar } from '../../redux/reducers/snackbarSlice';
+import { useDispatch } from 'react-redux';
+import { addToFavourite, getFavourite, removeFromFavourite } from '../../api';
+import PropTypes from 'prop-types';
+
 const Card = styled.div`
     width: 250px;
     display:flex;
@@ -120,28 +125,130 @@ const Price = styled.div`
 `;
 
 
-const ProductCard = () => {
-  return <Card>
+const ProductCard = ({product}) => {
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [favorite, setFavorite] = useState(false);
+    const [favoriteLoading, setFavoriteLoading] = useState(false);
+
+    const addFavorite = async () =>{
+        setFavorite(true);
+        const token = localStorage.getItem("BusyBuy-app-token");
+        await addToFavourite(token,{productID:product?._id})
+            .then((res)=>{
+                setFavorite(true);
+                setFavoriteLoading(false);
+            })
+            .catch((err)=>{
+                setFavoriteLoading(false);
+                dispatch(
+                    openSnackbar({
+                        message: err.message,
+                        severity: 'error',
+                    })
+                );
+            });
+
+        
+    }
+
+    
+    const removeFavorite = async () =>{
+        setFavorite(false);
+        const token = localStorage.getItem("BusyBuy-app-token");
+        await removeFromFavourite(token,{productID:product?._id})
+            .then((res)=>{
+                setFavorite(false);
+                setFavoriteLoading(false);
+            })
+            .catch((err)=>{
+                setFavoriteLoading(false);
+                dispatch(
+                    openSnackbar({
+                        message: err.message,
+                        severity: 'error',
+                    })
+                );
+            });
+    }
+
+    const checkFavourite = async () => {
+        setFavorite(true);
+        const token = localStorage.getItem("BusyBuy-app-token");
+        await getFavourite(token,{productID:product?._id})
+        .then((res)=>{
+                const isFavourite = res.data?.some(
+                    (favorite) => favorite._id === product?._id
+                );
+                setFavorite(isFavourite);
+                setFavoriteLoading(false);
+            })
+            .catch((err)=>{
+                setFavoriteLoading(false);
+                dispatch(
+                    openSnackbar({
+                        message: err.message,
+                        severity: 'error',
+                    })
+                );
+            });
+    }
+
+    useEffect(()=> {
+        checkFavourite();
+    },[favorite]);
+
+  return (
+  <Card>
     <Top>
-        <Image src={bestSeller}></Image>
+        <Image src={product?.image}></Image>
         <Menu>
-          <MenuItems>
-           <FavoriteRounded sx={{fontSize: "14px",color:'red'}}/>
+          <MenuItems 
+          onClick={()=> (favorite ? removeFavorite(): addFavorite())}
+          >
+          {favoriteLoading ? (
+            <CircularProgress sx={{fontSize: "20px"}}/>
+          ):(
+            <>
+            {favorite ?(
+                 <FavoriteRounded sx={{fontSize: "20px",color:'red'}}/>
+                ):( 
+                <FavoriteBorder sx={{fontSize: "20px"}}/>
+                ) }
+           </>
+            ) }
+           
           </MenuItems>  
           <MenuItems>
            <AddShoppingCartOutlined sx={{fontSize: "20px",color:'inherit'}}/>
           </MenuItems>
         </Menu>
         <Rate>
-             <Rating value={3.5} sx={{fontSize: "14px"}}/>
+             <Rating value={3.5} sx={{fontSize: "20px"}}/>
         </Rate>
     </Top>
-    <Details>
-        <Title>Title</Title>
-        <Desc>Desc</Desc>
-        <Price>&#8377;1200 <Span>&#8377;1500</Span><Percent>20%off</Percent></Price>
+    <Details onClick={() => navigate(`/shop/${product._id}`)}>
+        <Title>{product?.title}</Title>
+        <Desc>{product?.name}</Desc>
+        <Price>&#8377;{product?.price?.org}<Span>&#8377;${product?.price?.mrp}</Span><Percent>${product?.price?.off}%off</Percent></Price>
     </Details>
   </Card>
+  );
 }
+
+ProductCard.propTypes = {
+  product: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    image: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    price: PropTypes.shape({
+      org: PropTypes.number.isRequired,
+      mrp: PropTypes.number.isRequired,
+      off: PropTypes.number.isRequired,
+    }).isRequired,
+  }).isRequired,
+};
 
 export default ProductCard;

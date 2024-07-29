@@ -42,7 +42,7 @@ const CardWrapper = styled.div`
         gap:14px;
     }
 `;
-const Favourite = () => {
+const Favourite = ({product}) => {
   return (
   <Container>
     <Section >

@@ -7,7 +7,7 @@ const API = axios.create({
 export const userSignUp = async (data) => await API.post("/user/signup",data);
 export const userSignIn = async (data) => await API.post("/user/signin",data);
 
-export const getAllProduct = async (filter) => await API.post(`/products?${filter}`);
+export const getAllProduct = async (filter) => await API.get(`/products?${filter}`);
 export const getProductDetails = async (id) => await API.get(`/products/${id}`);
 
 
