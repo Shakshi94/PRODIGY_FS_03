@@ -1,7 +1,9 @@
-import React from 'react'
+import { useState } from 'react';
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import ProductCard from '../components/cards/ProductCard';
-
+import { getFavourite } from '../api';
+import { CircularProgress } from '@mui/material';
 const Container = styled.div`
     padding: 20px 30px;
     padding-bottom: 200px;
@@ -42,23 +44,47 @@ const CardWrapper = styled.div`
         gap:14px;
     }
 `;
-const Favourite = ({product}) => {
+const Favourite = () => {
+     const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [reload, setReload] = useState(false);
+
+  const getProducts = async () => {
+    setLoading(true);
+    const token = localStorage.getItem("BusyBuy-app-token");
+    await getFavourite(token).then((res) => {
+      setProducts(res.data);
+      setLoading(false);
+      setReload(!reload);
+    });
+  };
+
+  useEffect(() => {
+    getProducts();
+  }, []);
   return (
-  <Container>
-    <Section >
-      <Title>Your Favourites</Title>
-      <CardWrapper>
-          <ProductCard/>
-          <ProductCard/>
-          <ProductCard/>
-          <ProductCard/>
-          <ProductCard/>
-          <ProductCard/>
-          <ProductCard/>
-          <ProductCard/>
-      </CardWrapper>
-    </Section>
-  </Container>
+   <Container>
+      <Section>
+        <Title>Your favourites</Title>
+        <CardWrapper>
+          {loading ? (
+            <CircularProgress />
+          ) : (
+            <>
+              {products.length === 0 ? (
+                <>No Products</>
+              ) : (
+                <CardWrapper>
+                  {products.map((product) => (
+                    <ProductCard product={product} />
+                  ))}
+                </CardWrapper>
+              )}
+            </>
+          )}
+        </CardWrapper>
+      </Section>
+    </Container>
       )
 }
 

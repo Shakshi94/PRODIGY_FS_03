@@ -68,7 +68,7 @@ const Home = () => {
 
  useEffect(() => {
   getProducts();
- },[loading]);
+ },[]);
   return (
     <Container>
 
@@ -97,7 +97,7 @@ const Home = () => {
       </Section>
 
     </Container>
-  )
-}
+  );
+};
 
 export default Home;
