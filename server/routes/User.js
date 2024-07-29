@@ -20,7 +20,7 @@ router.post('/signin',userLogin);
 // Cart
 router.get('/cart', verifyToken,getAllCartItems);
 router.post('/cart', verifyToken,addToCart);
-router.post('/cart', verifyToken,removeFromCart);
+router.patch('/cart', verifyToken,removeFromCart);
 
 // order
 router.get('/order' ,verifyToken,getAllOrders);
@@ -29,6 +29,6 @@ router.post('/order', verifyToken,placeOrder);
 // Favourite
 router.get('/favorite', verifyToken, getUserFavourites);
 router.post('/favorite', verifyToken,addToFavorites);
-router.post('/favorite', verifyToken,removeFromFavorites);
+router.patch('/favorite', verifyToken,removeFromFavorites);
 
 export default router;
