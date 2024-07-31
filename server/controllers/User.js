@@ -11,7 +11,7 @@ export const userRegister = async (req,res,next) => {
         try{
            const {email,password,name,img} = req.body;
            const existingUser = await User.findOne({ email });
-           if(!existingUser){
+           if(existingUser){
                 return next(createError(409,'Email is already in use'))
            }
 
@@ -54,9 +54,6 @@ export const userLogin = async (req, res, next) => {
     }
 }
 
-// export const userLogout = async (req,res,next) => {
-    
-// }
 
 export const addToCart = async(req,res,next) => {
     try{
@@ -65,7 +62,7 @@ export const addToCart = async(req,res,next) => {
        const userJWT = req.user;
        const user = await User.findById(userJWT.id);
        const existingCartItemIndex = user.cart.findIndex((item) =>{
-        item.product.equals(productId);
+        item?.product?.equals(productId);
        } );
 
        if(existingCartItemIndex !== -1){
@@ -127,9 +124,9 @@ export const getAllCartItems = async (req,res,next) =>{
     try{
       const userJWT= req.user;
       const user =await User.findById(userJWT.id).populate({
-          path: 'card.product',
-          model: 'Products',
-      });
+          path: 'cart.product',
+          model: 'Product',
+      }).exec();
 
       const cartItems = user.cart;
       return res.status(200).json(cartItems);
@@ -143,8 +140,8 @@ export const placeOrder = async(req,res,next) =>{
       const {product, address , totalAmount} = req.body;
       const userJWT = req.user;
       const user = await User.findById(userJWT.id);
-      const order = new Orders({
-        products,
+      const order = new Order({
+        product,
         user: user._id,
         total_amount: totalAmount,
         address,
@@ -162,7 +159,7 @@ export const placeOrder = async(req,res,next) =>{
 export const getAllOrders = async (req,res,next) =>{
     try{
       const user = req.user;
-      const orders = await Orders.find({user: user.id});
+      const orders = await Order.find({user: user.id});
       return res.status(200).json(orders);
     }catch(err){
         next(err);

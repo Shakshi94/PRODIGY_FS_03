@@ -236,7 +236,7 @@ const ProductCard = ({ product }) => {
               </>
             )}
           </MenuItem>{" "}
-          <MenuItem onClick={() => addCart()}>
+          <MenuItem onClick={() => addCart(product?.id)}>
             <AddShoppingCartOutlined
               sx={{ color: "inherit", fontSize: "20px" }}
             />

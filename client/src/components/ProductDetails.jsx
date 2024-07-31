@@ -118,6 +118,11 @@ const Item = styled.div`
   background: ${theme.primary};
   color: white;
   `}
+
+   &:hover {
+    background-color: ${({ theme }) => theme.primary};
+    color: white;
+  }
 `;
 const ButtonWrapper = styled.div`
   display: flex;
@@ -125,6 +130,7 @@ const ButtonWrapper = styled.div`
   padding: 32px 0px;
 `;
 const ProductDetails = () => {
+
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();

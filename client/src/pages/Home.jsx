@@ -5,6 +5,7 @@ import {category} from '../utils/data';
 import ProductCategoryCard from '../components/cards/ProductCategoryCard ';
 import ProductCard from '../components/cards/ProductCard';
 import { getAllProduct } from '../api';
+import { CircularProgress } from '@mui/material';
 
 const Container = styled.div`
     padding: 20px 30px;
@@ -67,11 +68,11 @@ const Home = () => {
   };
 
  useEffect(() => {
-  getProducts();
+   getProducts()
  },[]);
   return (
     <Container>
-
+      {loading ? <CircularProgress/> : ( <>
       <Section style={{
          alignItems:'center', 
       }}>
@@ -95,7 +96,8 @@ const Home = () => {
           ))}
         </CardWrapper>
       </Section>
-
+      </>
+      )}
     </Container>
   );
 };

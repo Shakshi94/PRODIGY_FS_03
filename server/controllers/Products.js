@@ -44,10 +44,10 @@ export const getProducts = async (req, res, next) => {
 
         // Handle undefined or empty query parameters
         if (categories) {
-            categories = categories.split(",");
+            categories = categories?.split(",");
         }
         if (sizes) {
-            sizes = sizes.split(",");
+            sizes = sizes?.split(",");
         }
 
         const filter = {};

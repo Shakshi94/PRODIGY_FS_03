@@ -21,8 +21,8 @@ const userSchema = new mongoose.Schema({
     cart:{
         type: [
             {
-                product: {type:mongoose.Schema.Types.ObjectId,ref:'Product'},
-                quatity: { type: Number , default: 1},
+                product: {type: mongoose.Schema.Types.ObjectId, ref:'Product'},
+                quantity: { type: Number , default: 1},
             }
         ],
 

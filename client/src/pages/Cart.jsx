@@ -1,7 +1,13 @@
 import styled from 'styled-components';
-import img from '../utils/Images/signupandlogin.jpg';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button'
+import { addToCart, getCart, removeFromCart } from '../api';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { CircularProgress } from '@mui/material';
+import { openSnackbar } from '../redux/reducers/snackbarSlice';
+
 const Container = styled.div`
     padding: 20px 30px;
     padding-bottom: 200px;
@@ -127,10 +133,83 @@ const Delivery = styled.div`
 
 
 const Cart = () => {
+  
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [reload , setReload] = useState(false);
+  const [products , setProducts] = useState([]);
+  const [buttonLoad,setButtonLoad] = useState(false);
+
+  const getProducts = async () => {
+    setLoading(true);
+    const token = localStorage.getItem("BusyBuy-app-token");
+    await getCart(token).then((res) => {
+      setProducts(res.data);
+      setLoading(false);
+    });
+  };
+
+  
+  const addCart = async (id) => {
+    const token = localStorage.getItem("BusyBuy-app-token");
+    await addToCart(token, { productId: id, quantity: 1 })
+      .then((res) => {
+       setReload(!reload);
+      })
+      .catch((err) => {
+        setReload(!reload);
+        dispatch(
+          openSnackbar({
+            message: err.message,
+            severity: "error",
+          })
+        );
+      });
+  };
+  
+  const removeCart = async (id,quantity,type) => {
+    const token = localStorage.getItem("BusyBuy-app-token");
+    let qnt = quantity > 0 ? 1 : null ;
+    if(type === 'full') qnt = null;
+    await removeFromCart(token,{
+      productId: id,
+      quantity: qnt,
+    })
+     .then((res)=>{
+      setReload(!reload);
+     })
+     .catch((err)=>{
+      setReload(!reload);
+       dispatch(
+          openSnackbar({
+            message: err.message,
+            severity: "error",
+          })
+        );
+     });
+  }
+
+  const calculateSubtotal = () => {
+    return products.reduce(
+      (total,item) => total + item.quantity * item?.product?.price?.org,
+      0
+    );
+  }
+
+  useEffect(()=>{
+    getProducts();
+  },[]);
+  
+  {products.map((item) => {
+  console.log(item.product); })}
   return (
   <Container>
+    {loading ? (<CircularProgress/> ): (
     <Section>
       <Title>Your Shopping Cart</Title>
+
+      {products.length === 0 ? (<>Cart is empty</>) : (
       <Wrapper>
         <Left>
           <Table>
@@ -139,23 +218,29 @@ const Cart = () => {
             <TableItem bold>Quantity</TableItem>
             <TableItem bold>Subtotal</TableItem>
           </Table>
-
-           <Table>
-            <TableItem bold flex>
-              <Product>
-                <Img src={img}/>
-                <Details>
-                  <ProTitle>Title</ProTitle>
-                  <ProDesc>Desc</ProDesc>
-                  <ProSize>Size:&nbsp;&nbsp;XL</ProSize>
-                </Details>
-              </Product>
-            </TableItem>
-            <TableItem bold>&#8377;45000</TableItem>
-            <TableItem bold>
-              <Counter><div style={{cursor:'pointer'}}>-</div>2<div style={{cursor:'pointer'}}>+</div></Counter></TableItem>
-            <TableItem bold>&#8377;46000</TableItem>
-          </Table>
+          {products.map((item) => (
+  <Table key={item._id}>
+    <TableItem bold flex>
+      <Product>
+        <Img src={item?.product?.image} alt={item?.product?.title || 'Product Image'} />
+        <Details>
+          <ProTitle>{item?.product?.title || 'No title'}</ProTitle>
+          <ProDesc>{item?.product?.name || 'No name'}</ProDesc>
+          <ProSize>Size:&nbsp;&nbsp;XL</ProSize>
+        </Details>
+      </Product>
+    </TableItem>
+    <TableItem bold>${item?.product?.price?.org || '0'}</TableItem>
+    <TableItem bold>
+      <Counter>
+        <div style={{ cursor: 'pointer' }}>-</div>
+        {item.quantity || '0'}
+        <div style={{ cursor: 'pointer' }}>+</div>
+      </Counter>
+    </TableItem>
+    <TableItem bold>${item?.quantity * (item?.product?.price?.org || 0)}</TableItem>
+  </Table>
+))}
 
         </Left>
         <Right>
@@ -190,7 +275,9 @@ const Cart = () => {
           <Button text='Place Order' small/>
         </Right>
       </Wrapper>
+      )}
     </Section>
+    )}
   </Container>
   )
 }
