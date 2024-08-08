@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components';
 import TextInput from './TextInput';
 import Button from './Button';
-
+import { useDispatch } from 'react-redux';
+import { userSignUp } from '../api';
+import { loginSuccess } from '../redux/reducers/userSlice';
+import { openSnackbar } from '../redux/reducers/snackbarSlice';
 const Container = styled.div`
   width:100%;
   max-width:500px;
@@ -56,7 +59,67 @@ const Spann = styled.span`
 }
 `;
 
-const SignUp = () => {
+const SignUp = ({setOpenAuth}) => {
+  const dispatch = useDispatch();
+  const [loading,setLoading] = useState(false);
+  const [buttonDisable,setButtonDisable] = useState(false);
+  const [name,setName] = useState("");
+  const [email,setEmail] = useState("");
+  const [password,setPassword] = useState("");
+
+   const validateInputs = () =>{
+    if(!email || !password || !name){
+      alert("Please fill in all fields");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSignUp = async () => {
+    setLoading(true);
+    setButtonDisable(true);
+
+    if(validateInputs()){
+       await userSignUp({name,email,password})
+        .then((res)=> {
+          dispatch(loginSuccess(res.data));
+          dispatch(openSnackbar({
+            message: "Sign Up Successful",
+            severity: "success",
+          })
+        ); 
+        
+        setLoading(false);
+        setButtonDisable(false);
+        setOpenAuth(false);
+      }).catch((err) => {
+        if(err.response.data.message){
+          setLoading(false);
+          setButtonDisable(false);
+          alert(err.response.data.message);
+          dispatch(
+            openSnackbar({
+              message: err.response.data.message,
+              severity: 'error',
+            })
+          );
+        }else{
+          setLoading(false);
+          setButtonDisable(false);
+          dispatch(
+            openSnackbar({
+              message: err.message,
+              severity: 'error',
+            })
+          )
+        }
+      })
+    }
+
+
+    setButtonDisable(false);
+      setLoading(false);
+  };
   return <Container>
     <div>
       <Title>Create New Account<Spann>👋</Spann></Title>
@@ -68,18 +131,25 @@ const SignUp = () => {
        <TextInput 
         label='Full Name' 
         placeholder='Enter your full name'
+        value={name}
+        handelChange={(e) => setName(e.target.value)}
       />
 
       <TextInput 
         label='Email Address' 
         placeholder='Enter your email address'
+        value={email}
+        handelChange={(e) => setEmail(e.target.value)}
       />
 
       <TextInput 
         label='Password' 
         placeholder='Enter your Password'
+        password
+        value={password}
+        handelChange={(e) => setPassword(e.target.value)}
       />
-      <Button text='Sign Up'></Button>
+      <Button text='Sign Up' onClick={handleSignUp}></Button>
     </div>
   </Container>
 }

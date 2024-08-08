@@ -109,13 +109,13 @@ const Authentication = ({openAuth,setOpenAuth}) => {
         </CloseButton>
         {login ? (
           <>
-          <SignIn/>
+          <SignIn setOpenAuth={setOpenAuth}/>
           <Text>Don&apos;t have an account ? 
           <TextButton  onClick={()=> setLogin(false)}>Sign Up</TextButton></Text>
           </>
         ):(
           <>
-          <SignUp/>
+          <SignUp setOpenAuth={setOpenAuth}/>
            <Text>Already have an account ? {" "} 
            <TextButton onClick={()=> setLogin(true)}>Sign In</TextButton></Text>
           </>

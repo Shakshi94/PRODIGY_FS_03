@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import ProductCard from '../components/cards/ProductCard';
 import { getFavourite } from '../api';
 import { CircularProgress } from '@mui/material';
+
 const Container = styled.div`
     padding: 20px 30px;
     padding-bottom: 200px;
@@ -45,7 +46,7 @@ const CardWrapper = styled.div`
     }
 `;
 const Favourite = () => {
-     const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [reload, setReload] = useState(false);
 

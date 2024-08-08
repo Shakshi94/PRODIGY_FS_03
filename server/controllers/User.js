@@ -92,9 +92,9 @@ export const removeFromCart = async(req,res,next) =>{
        if(!user){
          return next(createError(404,'User not found'));
        }
-       const productIndex = user.cart.findIndex((item) =>{
-        item.product.equals(productId);
-       } );
+        const productIndex = user.cart.findIndex((item) => 
+            item.product.equals(productId) 
+            );
 
        if( productIndex !== -1){
 

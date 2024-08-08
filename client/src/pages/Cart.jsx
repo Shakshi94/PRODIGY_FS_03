@@ -1,12 +1,13 @@
 import styled from 'styled-components';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button'
-import { addToCart, getCart, removeFromCart } from '../api';
+import { addToCart, getCart, placeOrder, removeFromCart } from '../api';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { CircularProgress } from '@mui/material';
 import { openSnackbar } from '../redux/reducers/snackbarSlice';
+import { DeleteOutline } from '@mui/icons-material';
 
 const Container = styled.div`
     padding: 20px 30px;
@@ -141,6 +142,14 @@ const Cart = () => {
   const [products , setProducts] = useState([]);
   const [buttonLoad,setButtonLoad] = useState(false);
 
+  const [deliveryDeatils, setDeliveryDetails] = useState({
+    firstName: "",
+    lastName: "",
+    emailAddress: "",
+    phoneNumber: "",
+    completedAddress: "",
+  });
+
   const getProducts = async () => {
     setLoading(true);
     const token = localStorage.getItem("BusyBuy-app-token");
@@ -169,9 +178,11 @@ const Cart = () => {
   };
   
   const removeCart = async (id,quantity,type) => {
+
     const token = localStorage.getItem("BusyBuy-app-token");
-    let qnt = quantity > 0 ? 1 : null ;
-    if(type === 'full') qnt = null;
+
+    let qnt = quantity > 0 ? 1 : null;
+    if (type === 'full') qnt = null;
     await removeFromCart(token,{
       productId: id,
       quantity: qnt,
@@ -199,10 +210,59 @@ const Cart = () => {
 
   useEffect(()=>{
     getProducts();
-  },[]);
+  },[reload]);
   
-  {products.map((item) => {
-  console.log(item.product); })}
+  const convertAddressToString = () => {
+  return `${deliveryDeatils.firstName}, ${deliveryDeatils.lastName}, ${deliveryDeatils.completedAddress}, ${deliveryDeatils.phoneNumber}, ${deliveryDeatils.emailAddress}`;
+}
+
+
+  const PlaceOrder = async() => {
+      setButtonLoad(true);
+      try{
+        const isDeliveryDetailsFilled = 
+            deliveryDeatils.firstName &&
+            deliveryDeatils.lastName &&
+            deliveryDeatils.completedAddress &&
+            deliveryDeatils.phoneNumber &&
+            deliveryDeatils.emailAddress;
+
+         if(!isDeliveryDetailsFilled){
+            dispatch(
+              openSnackbar({
+                message: "Please fill in all required delivery details! ",
+                severity: "error",
+              })
+            );
+            return;
+         }   
+          const token = localStorage.getItem("BusyBuy-app-token");
+          const totalAmount = calculateSubtotal().toFixed(2);
+          const orderDetails = {
+            products,
+            address: convertAddressToString(deliveryDeatils),
+            totalAmount,
+          };
+          await placeOrder(token,orderDetails);
+          dispatch(
+          openSnackbar({
+            message: "Order Placed successfully!",
+            severity: "success",
+          })
+        );
+        setButtonLoad(false);
+        setReload(!reload);
+      }catch(err){
+       dispatch(
+          openSnackbar({
+            message: "Failed to Place order, Please try again !",
+            severity: "error",
+          })
+        );
+      }
+      setButtonLoad(false);
+      setReload(!reload);
+  }
   return (
   <Container>
     {loading ? (<CircularProgress/> ): (
@@ -218,46 +278,95 @@ const Cart = () => {
             <TableItem bold>Quantity</TableItem>
             <TableItem bold>Subtotal</TableItem>
           </Table>
-          {products.map((item) => (
-  <Table key={item._id}>
-    <TableItem bold flex>
-      <Product>
-        <Img src={item?.product?.image} alt={item?.product?.title || 'Product Image'} />
-        <Details>
-          <ProTitle>{item?.product?.title || 'No title'}</ProTitle>
-          <ProDesc>{item?.product?.name || 'No name'}</ProDesc>
-          <ProSize>Size:&nbsp;&nbsp;XL</ProSize>
-        </Details>
-      </Product>
-    </TableItem>
-    <TableItem bold>${item?.product?.price?.org || '0'}</TableItem>
-    <TableItem bold>
-      <Counter>
-        <div style={{ cursor: 'pointer' }}>-</div>
-        {item.quantity || '0'}
-        <div style={{ cursor: 'pointer' }}>+</div>
-      </Counter>
-    </TableItem>
-    <TableItem bold>${item?.quantity * (item?.product?.price?.org || 0)}</TableItem>
-  </Table>
-))}
-
+          {products?.map((item) => (
+          <Table key={item._id}>
+            <TableItem bold flex>
+              <Product>
+                <Img src={item?.product?.image} alt={item?.product?.title || 'Product Image'} />
+                <Details>
+                  <ProTitle>{item?.product?.title || 'No title'}</ProTitle>
+                  <ProDesc>{item?.product?.name || 'No name'}</ProDesc>
+                  <ProSize>Size:&nbsp;&nbsp;XL</ProSize>
+                </Details>
+              </Product>
+            </TableItem>
+            <TableItem bold>${item?.product?.price?.org || '0'}</TableItem>
+            <TableItem bold>
+              <Counter>
+                <div 
+                style={{ cursor: 'pointer',flex: 1 }} 
+                onClick={() => removeCart(item?.product?._id , item?.quantity - 1)}
+                >-</div>
+                {item?.quantity}
+                <div 
+                style={{ cursor: 'pointer',flex: 1 }}
+                onClick={() => addCart(item?.product?._id)}
+                > + </div>
+              </Counter>
+            </TableItem>
+            <TableItem bold>{" "}${(item?.quantity * item?.product?.price?.org).toFixed(2)}</TableItem>
+            <TableItem>
+              <DeleteOutline
+              sx={{color:'red',cursor:'pointer'}}
+              onClick={() => removeCart(
+                item?.product?._id,
+                item?.quantity - 1,
+                'full'
+              )}
+              />
+            </TableItem>
+          </Table>
+      ))}
         </Left>
         <Right>
-          <SubTotal>SubTotal: 46000.60</SubTotal>
+          <SubTotal>SubTotal: ${calculateSubtotal().toFixed(2)}</SubTotal>
           <Delivery>
             DeliveryDeatils:
             <div>
               <div style={{display: 'flex', gap: '6px'}}>
-                <TextInput small placeholder='First Name'/>
-                <TextInput small placeholder='Last Name'/>
+                <TextInput 
+                small 
+                handelChange={(e) => setDeliveryDetails({
+                ...deliveryDeatils,
+                firstName: e.target.value,
+              })}
+              value={deliveryDeatils.firstName}
+                placeholder='First Name'/>
+                <TextInput 
+                small
+                handelChange={(e) => setDeliveryDetails({
+                ...deliveryDeatils,
+                lastName: e.target.value,
+              })}
+              value={deliveryDeatils.lastName} 
+                placeholder='Last Name'/>
               </div>
-              <TextInput small placeholder='Email Address'/>
-              <TextInput small placeholder='Phone No. +91 XXXXX XXXXX'/>
+              <TextInput 
+              small 
+              placeholder='Email Address'
+              handelChange={(e) => setDeliveryDetails({
+                ...deliveryDeatils,
+                emailAddress: e.target.value,
+              })}
+              value={deliveryDeatils.emailAddress}
+              />
+              <TextInput 
+              small 
+              handelChange={(e) => setDeliveryDetails({
+                ...deliveryDeatils,
+                phoneNumber: e.target.value,
+              })}
+              value={deliveryDeatils.phoneNumber}
+              placeholder='Phone No. +91 XXXXX XXXXX'/>
               <TextInput 
               small 
               textArea 
-              rows={5}
+              rows="5"
+              handelChange={(e) => setDeliveryDetails({
+                ...deliveryDeatils,
+                completedAddress: e.target.value,
+              })}
+              value={deliveryDeatils.completedAddress}
               placeholder='Complete Address (Address,State,Country,Pincode)'/>
             </div>
           </Delivery>
@@ -272,7 +381,10 @@ const Cart = () => {
               </div>
             </div>
           </Delivery>
-          <Button text='Place Order' small/>
+          <Button 
+          text='Place Order' 
+          small onClick={PlaceOrder}
+          isDisabled={buttonLoad}/>
         </Right>
       </Wrapper>
       )}
