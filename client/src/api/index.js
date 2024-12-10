@@ -40,6 +40,7 @@ export const getFavourite = async (token) =>
 export const addToFavourite = async (token, data) =>
   await API.post(`/user/favorite/`, data, {
     headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ productId: 'someProductId' })
   });
 
 export const removeFromFavourite = async (token, data) =>

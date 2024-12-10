@@ -143,7 +143,7 @@ const ProductCard = ({ product }) => {
   const addFavorite = async () => {
     setFavoriteLoading(true);
     const token = localStorage.getItem("BusyBuy-app-token");
-    await addToFavourite(token, { productID: product?._id })
+    await addToFavourite(token, { productId: product?._id })
       .then((res) => {
         setFavorite(true);
         setFavoriteLoading(false);
@@ -161,7 +161,7 @@ const ProductCard = ({ product }) => {
   const removeFavorite = async () => {
     setFavoriteLoading(true);
     const token = localStorage.getItem("BusyBuy-app-token");
-    await removeFromFavourite(token, { productID: product?._id })
+    await removeFromFavourite(token, { productId: product?._id })
       .then((res) => {
         setFavorite(false);
         setFavoriteLoading(false);
