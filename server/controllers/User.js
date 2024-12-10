@@ -172,16 +172,12 @@ export const addToFavorites = async (req, res, next) => {
         const userJWT = req.user;
 
         // Check if productId is provided
-        console.log(productId);
         if (!productId) {
             return res.status(400).json({ message: 'Product ID is required' });
         }
 
         // Find user by ID from JWT
-        const user = await User.findById(userJWT.id);
-
-        // Log the retrieved user
-        console.log('User:', user);
+        const user = await User.findById(userJWT.id).populate('favourites').exec();
 
         // Handle case where user is not found
         if (!user) {
@@ -194,20 +190,15 @@ export const addToFavorites = async (req, res, next) => {
         }
 
         // Check if product is already in favourites
-        if (!user.favourites.includes(productId)) {
+        const productAlreadyInFavourites = user.favourites.some(fav => fav._id.toString() === productId);
+        if (!productAlreadyInFavourites) {
             user.favourites.push(productId);
             await user.save();
-            console.log('Favourites updated:', user.favourites);
+            return res.status(200).json({ message: 'Product added to favourites successfully', user });
         } else {
-            console.log('Product already in favourites');
+            return res.status(400).json({ message: 'Product is already in favourites' });
         }
-
-        return res
-            .status(200)
-            .json({ message: 'Product added to favourites successfully', user });
-
     } catch (err) {
-        // Pass error to error handling middleware
         next(err);
     }
 };
