@@ -22,11 +22,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.get('/', async (req, res) => {
-  res.status(200).json({
-    message: "hello it's Shakshi Vishwakarma",
-  });
-});
 
 app.use('/api/user', userRouter);
 app.use('/api/products', productRouter);
@@ -34,7 +29,11 @@ const connectDB = async () => {
   mongoose.set('strictQuery', true);
 
   try {
-    await mongoose.connect(Db_url);
+    await mongoose.connect(Db_url,{
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000
+    });
     console.log('database connected successfully');
   } catch (err) {
     console.error('Database connection error:', err);
