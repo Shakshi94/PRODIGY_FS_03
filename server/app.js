@@ -11,7 +11,7 @@ const app = express();
 
 const corsOptions = {
   origin: ['https://busybuy-536e.onrender.com', 'https://busybuy-363a.onrender.com', 'http://localhost:5173'], // Add all allowed origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
+  methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'], // Specify allowed methods
   credentials: true, // If you're using cookies or sessions, you need this
 };
 
