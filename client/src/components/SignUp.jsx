@@ -68,6 +68,8 @@ const SignUp = ({setOpenAuth}) => {
   const [email,setEmail] = useState("");
   const [password,setPassword] = useState("");
 
+  console.log(API.defaults.baseURL); 
+  
    const validateInputs = () =>{
     if(!email || !password || !name){
       alert("Please fill in all fields");

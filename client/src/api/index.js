@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://busybuy-363a.onrender.com/",
+  baseURL: "https://busybuy-363a.onrender.com/api",
 });
 
 export const userSignUp = async (data) => await API.post("/user/signup", data,{ withCredentials: true });
