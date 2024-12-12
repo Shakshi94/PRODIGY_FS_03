@@ -45,8 +45,8 @@ const connectDB = async () => {
 const startServer = async () => {
   connectDB();
   try {
-    app.listen(9000, () => {
-      console.log('server is listening at port 9000');
+    app.listen(8000, () => {
+      console.log('server is listening at port 8000');
     });
   } catch (err) {
     console.error('Server error:', err);
