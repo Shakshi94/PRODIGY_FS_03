@@ -224,7 +224,7 @@ export const removeFromFavorites = async (req,res,next) =>{
 
 export const getUserFavourites = async(req,res,next)=>{
  try{ const userId = req.user.id;
-    const user = await User.findById(userId).populate("favourites").exec();
+    const user = await User.findById(userId).populate("favourites");
 
     if(!user){
         return next(createError(404,'User not found'));
