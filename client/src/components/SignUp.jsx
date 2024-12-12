@@ -4,6 +4,7 @@ import TextInput from './TextInput';
 import Button from './Button';
 import { useDispatch } from 'react-redux';
 import { userSignUp } from '../api';
+
 import { loginSuccess } from '../redux/reducers/userSlice';
 import { openSnackbar } from '../redux/reducers/snackbarSlice';
 const Container = styled.div`
@@ -149,9 +150,9 @@ const SignUp = ({setOpenAuth}) => {
         value={password}
         handelChange={(e) => setPassword(e.target.value)}
       />
-      <Button text='Sign Up' onClick={handleSignUp}></Button>
+      <Button text='Sign Up' onClick={handleSignUp} isLoading={loading} isDisabled={buttonDisable}></Button>
     </div>
   </Container>
 }
 
-export default SignUp
+export default SignUp;
