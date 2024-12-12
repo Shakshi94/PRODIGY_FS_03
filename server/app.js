@@ -8,11 +8,15 @@ import productRouter from './routes/Products.js';
 dotenv.config();
 
 const app = express();
-app.use(cors({
-  origin: 'https://busybuy-536e.onrender.com/', // Replace with your frontend URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true,
-}));
+
+const corsOptions = {
+  origin: ['https://busybuy-536e.onrender.com', 'https://busybuy-363a.onrender.com', 'http://localhost:5173'], // Add all allowed origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
+  credentials: true, // If you're using cookies or sessions, you need this
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
 
