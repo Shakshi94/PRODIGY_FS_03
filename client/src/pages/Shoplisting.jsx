@@ -93,7 +93,7 @@ const SelectableItem = styled.div`
 const ShopListing = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
-  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [priceRange, setPriceRange] = useState([0,50000]);
   const [selectedSizes, setSelectedSizes] = useState(["S", "M", "L", "XL"]); // Default selected sizes
   const [selectedCategories, setSelectedCategories] = useState([
     "Men",
@@ -115,6 +115,7 @@ const ShopListing = () => {
       }`
     ).then((res) => {
       setProducts(res.data);
+      console.log(res.data);
       setLoading(false);
     });
   };
@@ -139,11 +140,11 @@ const ShopListing = () => {
                         aria-label="Price"
                         defaultValue={priceRange}
                         min={0}
-                        max={1000}
+                        max={50000}
                         valueLabelDisplay="auto"
                         marks={[
                           { value: 0, label: "$0" },
-                          { value: 1000, label: "$1000" },
+                          { value: 50000, label: "$50000" },
                         ]}
                         onChange={(e, newValue) => setPriceRange(newValue)}
                       />
